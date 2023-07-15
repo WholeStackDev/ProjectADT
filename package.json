@@ -1,0 +1,24 @@
+{
+	"name": "projectadt",
+	"version": "1.0.0",
+	"description": "A universal translator for Discord",
+	"main": "./src/index.js",
+	"scripts": {
+		"dev": "nodemon ./src/index.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/mchappeldev/ProjectADT.git"
+	},
+	"author": "Michael Chappel and Michael Phillips",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/mchappeldev/ProjectADT/issues"
+	},
+	"homepage": "https://github.com/mchappeldev/ProjectADT#readme",
+	"dependencies": {
+		"discord.js": "^14.11.0",
+		"dotenv": "^16.3.1",
+		"nodemon": "^3.0.1"
+	}
+}
