@@ -12,6 +12,14 @@ client.on(Events.MessageCreate, async (message) => {
 	if (message.attachments.size > 0) {
 		console.log("Message has attachments");
 		const audio = message.attachments.first();
+
+		//Function to use microsoft speech to text here
+
+		//Function to use chatgpt Translation here
+
+		//Function to use microsoft text to speech here
+
+		//Pass the audio file to the user
 		await message.reply({
 			content: "Here is your audio file!",
 			embeds: [
