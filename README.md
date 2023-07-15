@@ -1,0 +1,2 @@
+# ProjectADT
+Automatic Discord Translator
