@@ -2,31 +2,36 @@ require("dotenv").config();
 const chatWithAI = require("./openaiChat");
 const languageNameMappings = require("./languageNameMappings");
 
-const token = process.env.DISCORD_TOKEN;
-const languageCodes = ["en", "fa", "de", "fr", "es"];
-
-const { Client, Events, GatewayIntentBits, Collection } = require("discord.js");
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
-
-client.on(Events.MessageCreate, async (message) => {
-	if (message.author.bot) return; // Ignore messages from bots
-	if (!message.guild) return; // Ignore DMs
-
 	// if(message.attachments.size > 0) {
 	// 	const possibleAudio = message.attachments.first();
 	// 	const test = speechToText(possibleAudio);
 	// 	console.log(test);
 	// }
 
-	let originLanguageCode = getLangCode(message.channel);
+const token = process.env.DISCORD_TOKEN;
+const languageCodes = ["en", "fa", "de", "fr", "es"];
 
+const { Client, Events, GatewayIntentBits, EmbedBuilder, Collection } = require("discord.js");
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
+
+client.on(Events.MessageCreate, async (message) => {
+	if (message.author.bot) return; // Ignore messages from bots
+	if (!message.guild) return; // Ignore DMs
+
+	const originLanguageCode = getLangCode(message.channel);
 	const channelsToSendTranslation = getAllChannelsToSendTranslation(message);
+    if(channelsToSendTranslation.length === 0) return;
 
-	for (const channel of channelsToSendTranslation) {
-		const destinationLanguageCode = getLangCode(channel);
-		if (originLanguageCode === destinationLanguageCode) return;
-		const translation = await translate(originLanguageCode, destinationLanguageCode, message.content);
-		channel.send(translation);
+	for (const destinationChannel of channelsToSendTranslation) {
+		const destinationLanguageCode = getLangCode(destinationChannel);
+        const destinationIsSpoken = getIsSpoken(destinationChannel);
+
+        let messageText = message.content;
+		if (originLanguageCode !== destinationLanguageCode) {
+            const translation = await translate(originLanguageCode, destinationLanguageCode, message.content);
+            if(translation) messageText = translation;
+        }
+		destinationChannel.send(getFormattedMessage(messageText, message));
 	}
 });
 
@@ -36,8 +41,18 @@ client.once(Events.ClientReady, (c) => {
 
 client.login(token);
 
+function getFormattedMessage(text, originalMessage) {
+    let displayName = originalMessage.member.nickname ? originalMessage.member.nickname : originalMessage.author.username;
+    const exampleEmbed = new EmbedBuilder()
+    .setColor(0x0099FF)
+    .setDescription(text)
+    .setAuthor({ name: displayName, iconURL: originalMessage.author.displayAvatarURL(), url: 'https://discord.js.org' })
+    return { embeds: [exampleEmbed] };
+}
+
 async function translate(from, to, text) {
-	return await chatWithAI(`Please translate the following message from ${from} to ${to} and do not send anything else except the translation since this is being used with an API: ${text}`);
+	const response = await chatWithAI(`Please translate the following message from ${from} to ${to} and do not send anything else except the translation since this is being used with an API: ${text}`);
+    return response;
 }
 
 function textToSpeech(text, lang) {
@@ -94,7 +109,7 @@ function getLangCode(channel) {
 
 function getBaseName(channel) {
 	const { baseName } = getChannelRegexMatches(channel.name);
-	if (languageCodes.includes(languageCode)) {
+	if (languageCodes.includes(getLangCode(channel))) {
 		return baseName;
 	}
 	return channel.name;
