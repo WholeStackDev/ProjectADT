@@ -31,7 +31,7 @@ client.on(Events.MessageCreate, async (message) => {
             const translation = await translate(originLanguageCode, destinationLanguageCode, message.content);
             if(translation) messageText = translation;
         }
-		destinationChannel.send(getFormattedMessage(messageText, message));
+		destinationChannel.send(getFormattedMessage(messageText, message, true));
 	}
 });
 
@@ -41,12 +41,20 @@ client.once(Events.ClientReady, (c) => {
 
 client.login(token);
 
-function getFormattedMessage(text, originalMessage) {
+function getFormattedMessage(text, originalMessage, isSpoken) {
     let displayName = originalMessage.member.nickname ? originalMessage.member.nickname : originalMessage.author.username;
+	if(isSpoken) {
+		text = `${text}
+		
+		[Listen here](https://file-examples.com/storage/fee472ce6e64b122ba0c8b3/2017/11/file_example_MP3_700KB.mp3)
+		`
+	}
+
     const exampleEmbed = new EmbedBuilder()
     .setColor(0x0099FF)
     .setDescription(text)
-    .setAuthor({ name: displayName, iconURL: originalMessage.author.displayAvatarURL(), url: 'https://discord.js.org' })
+    .setAuthor({ name: displayName, iconURL: originalMessage.author.displayAvatarURL(), url: 'https://discord.js.org' });
+
     return { embeds: [exampleEmbed] };
 }
 
