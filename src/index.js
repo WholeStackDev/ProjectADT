@@ -43,12 +43,12 @@ client.login(token);
 
 function getFormattedMessage(text, originalMessage, isSpoken) {
     let displayName = originalMessage.member.nickname ? originalMessage.member.nickname : originalMessage.author.username;
-	if(isSpoken) {
-		text = `${text}
+	// if(isSpoken) {
+	// 	text = `${text}
 		
-		[Listen here](https://file-examples.com/storage/fee472ce6e64b122ba0c8b3/2017/11/file_example_MP3_700KB.mp3)
-		`
-	}
+	// 	[Listen here](https://file-examples.com/storage/fee472ce6e64b122ba0c8b3/2017/11/file_example_MP3_700KB.mp3)
+	// 	`
+	// }
 
     const exampleEmbed = new EmbedBuilder()
     .setColor(0x0099FF)
@@ -59,7 +59,14 @@ function getFormattedMessage(text, originalMessage, isSpoken) {
 }
 
 async function translate(from, to, text) {
-	const response = await chatWithAI(`Please translate the following message from ${from} to ${to} and do not send anything else except the translation since this is being used with an API: ${text}`);
+	let response;
+	if(from === "fa") {
+		response = await chatWithAI(`Please translate the following message after the semicolon from dari to ${to} and do not send anything else except the translation since this is being used with an API.
+		If the user says "درست است ", assume that means "OK" instead of "That is correct" unless there is a very good reason from the context to decide otherwise:
+		${text}`);
+	} else {
+		response = await chatWithAI(`Please translate the following message from ${from} to ${to} and do not send anything else except the translation since this is being used with an API: ${text}`);
+	}
     return response;
 }
 
