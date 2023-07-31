@@ -61,8 +61,7 @@ function getFormattedMessage(text, originalMessage, isSpoken) {
 async function translate(from, to, text) {
 	let response;
 	if(from === "fa") {
-		response = await chatWithAI(`Please translate the following message after the semicolon from dari to ${to} and do not send anything else except the translation since this is being used with an API.
-		If the user says "درست است ", assume that means "OK" instead of "That is correct" unless there is a very good reason from the context to decide otherwise:
+		response = await chatWithAI(`Please translate the following message after the semicolon from Dari to ${to}, and do not send anything else except the translation since this is being used with an API. Keep in mind to not translate compound words or phrases individually, always consider the overall context of the sentence. If the user says "درست است", assume that means "OK" instead of "That is correct" unless there is a very good reason from the context to decide otherwise:
 		${text}`);
 	} else {
 		response = await chatWithAI(`Please translate the following message from ${from} to ${to} and do not send anything else except the translation since this is being used with an API: ${text}`);
