@@ -61,10 +61,19 @@ function getFormattedMessage(text, originalMessage, isSpoken) {
 async function translate(from, to, text) {
 	let response;
 	if(from === "fa") {
-		response = await chatWithAI(`Please translate the following message after the semicolon from Dari to ${to}, and do not send anything else except the translation since this is being used with an API. Keep in mind to not translate compound words or phrases individually, always consider the overall context of the sentence. If the user says "درست است", assume that means "OK" instead of "That is correct" unless there is a very good reason from the context to decide otherwise:
+		response = await chatWithAI(`
+		Please translate the following message after the dashes from Dari to ${to}, and do not send anything else except the translation since this is being used with an API.
+		Keep in mind to not translate compound words or phrases individually, always consider the overall context of the sentence.
+		If something is wrapped in brakets like [this], then do not change it or translate it at all. Just leave it in the position where it appeared in the text in the original language and in the original language's text direction.
+		If the user says "درست است", assume that means "OK" instead of "That is correct" unless there is a very good reason from the context to decide otherwise
+		-----------------------
 		${text}`);
 	} else {
-		response = await chatWithAI(`Please translate the following message from ${from} to ${to} and do not send anything else except the translation since this is being used with an API: ${text}`);
+		response = await chatWithAI(`
+		Please translate the following message after the dashes from ${from} to ${to}, and do not send anything else except the translation since this is being used with an API.
+		If something is wrapped in brakets like [this], then do not change it or translate it at all. Just leave it in the position where it appeared in the text in the original language and in the original language's text direction.
+		-----------------------
+		${text}`);
 	}
     return response;
 }
